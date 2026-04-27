@@ -42,6 +42,9 @@ Soporte nativo para 4 estilos de visualización mediante parámetros de URL:
 - **Plataforma + Usuario** en la cabecera del mensaje con colores distintivos por plataforma (Twitch morado, YouTube rojo, TikTok rosa, Kick verde).
 - Cambios de estilo aplicados instantáneamente a todos los mensajes existentes.
 
+
+<img width="869" height="495" alt="image" src="https://github.com/user-attachments/assets/cf510c90-9ad8-4d47-9257-b5bb53fba0f5" />
+
 ---
 
 ## 🛡️ Estabilidad y Tecnología Anti-Bloqueo
@@ -51,6 +54,10 @@ Soporte nativo para 4 estilos de visualización mediante parámetros de URL:
 *   **Escudo Global**: El motor es inmune a cierres por errores de red; si algo falla, se recupera solo sin interrumpir el stream.
 
 ---
+
+<img width="1917" height="971" alt="image" src="https://github.com/user-attachments/assets/b7dd749a-2427-4f82-b2ed-e69c2e137d52" />
+
+
 
 ## 🛠️ Estructura del Proyecto
 
