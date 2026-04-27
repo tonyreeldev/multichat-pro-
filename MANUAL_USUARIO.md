@@ -7,13 +7,35 @@ Bienvenido a **Multichat**. Esta herramienta te permite centralizar los chats de
 ## 🚀 Inicio Rápido
 
 ### En macOS
-1. Localiza el archivo `start_mac.command` en la carpeta del proyecto.
-2. Haz **doble clic** sobre él.
-3. Se abrirá la interfaz gráfica (GUI) y el terminal se cerrará automáticamente.
+1. Abre la terminal en la carpeta del proyecto.
+2. Ejecuta `npm install` (solo la primera vez).
+3. Ejecuta `npm start` para iniciar el servidor.
+4. Se abrirá automáticamente el Dashboard en `http://localhost:8000`.
 
 ### En Windows
-1. Localiza el archivo `start_windows.bat`.
+1. Localiza el archivo `start_node_windows.bat`.
 2. Haz **doble clic** sobre él.
+
+---
+
+## 🎨 Personalización de Estilos
+
+### Estilos de Burbujas
+En el Dashboard, ve a la columna derecha **"Estilo de Burbuja"** y selecciona:
+- **CLÁSICO**: Estilo por defecto con borde de color.
+- **BURBUJA**: Forma redondeada tipo aplicación de mensajería.
+- **MINIMAL**: Transparente, sin bordes ni sombras.
+- **CRISTAL**: Efecto de vidrio con desenfoque.
+- **AVATAR**: Muestra la foto de perfil del usuario.
+
+Los cambios se aplican instantáneamente a todos los mensajes en pantalla.
+
+### Colores por Plataforma
+Cada mensaje muestra automáticamente el color distintivo de su plataforma:
+- 🟣 **Twitch**: Morado
+- 🔴 **YouTube**: Rojo
+- 🌸 **TikTok**: Rosa
+- 🟢 **Kick**: Verde
 
 ---
 

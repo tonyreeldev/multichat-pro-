@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Multichat Pro v2.0 | Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Montserrat:wght@700&family=Roboto:wght@400;700&family=Poppins:wght@400;700&family=Bebas+Neue&family=Fredoka:wght@600&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #0f172a; overflow-x: hidden; }
         .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); }
@@ -92,7 +92,13 @@
                         <div class="space-y-2"><div class="flex justify-between text-[10px] font-bold text-slate-400"><span>OPACIDAD</span><span id="bg-opacity-val">40%</span></div><input type="range" id="bg-opacity" min="0" max="100" value="40" class="w-full" oninput="document.getElementById('bg-opacity-val').innerText = this.value+'%'; updateStyle()"></div>
                         <div class="grid grid-cols-2 gap-4">
                             <select id="font-family" class="bg-slate-900 border border-slate-800 rounded-lg px-2 py-2 text-xs focus:outline-none" onchange="updateStyle()">
-                                <option value="'Segoe UI', sans-serif">Segoe UI</option><option value="'Arial', sans-serif">Arial</option><option value="'Courier New', monospace">Monospace</option>
+                                <option value="'Inter', sans-serif">Inter (Modern)</option>
+                                <option value="'Montserrat', sans-serif">Montserrat (Bold)</option>
+                                <option value="'Poppins', sans-serif">Poppins (Clean)</option>
+                                <option value="'Roboto', sans-serif">Roboto (Tech)</option>
+                                <option value="'Bebas Neue', cursive">Bebas Neue (Impact)</option>
+                                <option value="'Fredoka', sans-serif">Fredoka (Fun)</option>
+                                <option value="'Courier New', monospace">Monospace</option>
                             </select>
                             <input type="color" id="text-color" value="#ffffff" class="w-full h-8 rounded border-0 bg-transparent cursor-pointer" oninput="updateStyle()">
                         </div>
@@ -127,6 +133,10 @@
                     <button onclick="setBubble('minimal')" id="bubble-btn-minimal" class="bubble-btn p-2 rounded-lg bg-slate-900/50 border border-slate-800 text-[10px] font-bold hover:bg-slate-800 transition">MINIMAL</button>
                     <button onclick="setBubble('glass')" id="bubble-btn-glass" class="bubble-btn p-2 rounded-lg bg-slate-900/50 border border-slate-800 text-[10px] font-bold hover:bg-slate-800 transition">CRISTAL</button>
                     <button onclick="setBubble('avatar')" id="bubble-btn-avatar" class="bubble-btn p-2 rounded-lg bg-slate-900/50 border border-slate-800 text-[10px] font-bold hover:bg-slate-800 transition">AVATAR</button>
+                    <button onclick="setBubble('neon')" id="bubble-btn-neon" class="bubble-btn p-2 rounded-lg bg-slate-900/50 border border-slate-800 text-[10px] font-bold hover:bg-slate-800 transition">NEON</button>
+                    <button onclick="setBubble('retro')" id="bubble-btn-retro" class="bubble-btn p-2 rounded-lg bg-slate-900/50 border border-slate-800 text-[10px] font-bold hover:bg-slate-800 transition">RETRO</button>
+                    <button onclick="setBubble('gradient')" id="bubble-btn-gradient" class="bubble-btn p-2 rounded-lg bg-slate-900/50 border border-slate-800 text-[10px] font-bold hover:bg-slate-800 transition">GRADIENTE</button>
+                    <button onclick="setBubble('border')" id="bubble-btn-border" class="bubble-btn p-2 rounded-lg bg-slate-900/50 border border-slate-800 text-[10px] font-bold hover:bg-slate-800 transition">BORDE</button>
                 </div>
             </div>
 
@@ -136,6 +146,11 @@
                 <div class="relative p-2 bg-slate-900/80 rounded border border-slate-800 cursor-pointer hover:border-blue-500/50 transition group" onclick="copyLink('/chat?layout=horizontal', this)"><div class="copy-feedback">¡Copiado!</div><div class="text-[8px] font-bold text-blue-400 mb-1">HORIZONTAL</div><div class="text-[9px] text-slate-500 truncate">?layout=horizontal</div></div>
                 <div class="relative p-2 bg-slate-900/80 rounded border border-slate-800 cursor-pointer hover:border-blue-500/50 transition group" onclick="copyLink('/chat?layout=ticker', this)"><div class="copy-feedback">¡Copiado!</div><div class="text-[8px] font-bold text-blue-400 mb-1">TICKER</div><div class="text-[9px] text-slate-500 truncate">?layout=ticker</div></div>
                 <div class="relative p-2 bg-slate-900/80 rounded border border-slate-800 cursor-pointer hover:border-blue-500/50 transition group" onclick="copyLink('/chat?layout=scroll', this)"><div class="copy-feedback">¡Copiado!</div><div class="text-[8px] font-bold text-blue-400 mb-1">SCROLL</div><div class="text-[9px] text-slate-500 truncate">?layout=scroll</div></div>
+            </div>
+
+            <div class="glass p-5 rounded-xl border-t-2 border-t-emerald-500 space-y-3">
+                <h2 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Simulación</h2>
+                <button onclick="simulateMessage()" class="w-full py-2 bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-400 border border-emerald-600/30 text-[10px] font-bold rounded transition">SIMULAR MENSAJE</button>
             </div>
         </div>
     </main>
@@ -207,6 +222,24 @@
             const data = { fontSize: document.getElementById('font-size').value + 'px', bgOpacity: document.getElementById('bg-opacity').value / 100, fontFamily: document.getElementById('font-family').value, textColor: document.getElementById('text-color').value, rainbowMode: document.getElementById('rainbow-mode').checked, pauseOnHover: document.getElementById('pause-on-hover').checked, bubbleStyle: currentBubble };
             socket.emit('update_style', data);
             localStorage.setItem('chatStyle', JSON.stringify(data));
+        }
+
+        function simulateMessage() {
+            const platforms = ['twitch', 'youtube', 'tiktok', 'kick'];
+            const authors = ['AlexStreamer', 'Maria_Live', 'GamingPro', 'User123', 'TonyReel'];
+            const messages = ['¡Hola a todos!', '¡Este estilo se ve genial!', 'Multichat Pro v2.0 es lo mejor.', '¿Cómo va el directo?', '¡Wow, mira esos efectos!', '¿Alguien más está viendo esto?'];
+            const colors = ['#9146FF', '#FF0000', '#EE1D52', '#53FC18', '#3b82f6'];
+            
+            const randomIdx = Math.floor(Math.random() * platforms.length);
+            const data = {
+                platform: platforms[randomIdx],
+                author: authors[Math.floor(Math.random() * authors.length)],
+                message: messages[Math.floor(Math.random() * messages.length)],
+                color: colors[randomIdx],
+                type: 'chat',
+                timestamp: new Date().toISOString()
+            };
+            socket.emit('test_message', data);
         }
 
         function setBubble(style) {

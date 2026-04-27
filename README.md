@@ -30,6 +30,18 @@ Soporte nativo para 4 estilos de visualización mediante parámetros de URL:
 3.  **Ticker (`/chat?layout=ticker`)**: Marquesina tipo noticiero de una sola línea (1920x100px).
 4.  **Scroll (`/chat?layout=scroll`)**: Flujo ascendente continuo para créditos o pantallas de espera.
 
+### 4. Estilos de Burbujas Personalizables
+5 estilos visuales para los mensajes, aplicables en tiempo real desde el Dashboard:
+1.  **Clásico**: Estilo estándar con borde izquierdo de color.
+2.  **Burbuja**: Bordes redondeados tipo mensajería moderna.
+3.  **Minimal**: Transparente y limpio, sin bordes ni sombras.
+4.  **Cristal**: Efecto glassmorphism con desenfoque de fondo.
+5.  **Avatar**: Muestra la imagen del usuario junto al mensaje.
+
+### 5. Visualización Mejorada
+- **Plataforma + Usuario** en la cabecera del mensaje con colores distintivos por plataforma (Twitch morado, YouTube rojo, TikTok rosa, Kick verde).
+- Cambios de estilo aplicados instantáneamente a todos los mensajes existentes.
+
 ---
 
 ## 🛡️ Estabilidad y Tecnología Anti-Bloqueo
@@ -49,19 +61,23 @@ Multichat Final/
 ├── channels.json           # Base de datos local de configuración
 ├── start_node_windows.bat  # Lanzador Automático (Limpia puertos + Auto-update)
 ├── public/                 # Interfaz de Usuario
-│   ├── index.html          # Dashboard Maestro de Control
-│   └── chat.html           # Overlay Universal (4 Layouts + Emote Engine)
-└── README.md               # Este manual
+│   ├── index.html          # Dashboard Maestro de Control (Estilos + Conexión)
+│   └── chat.html           # Overlay Universal (5 Estilos de Burbujas + 4 Layouts)
+├── README.md               # Este manual
+├── MANUAL_USUARIO.md       # Guía de uso
+└── DESPLIEGUE.md           # Instrucciones de despliegue en la nube
 ```
 
 ---
 
 ## 📺 Configuración Rápida
-1.  Ejecuta `start_node_windows.bat`.
+1.  **En Windows**: Ejecuta `start_node_windows.bat`.
+    **En Mac**: Ejecuta `npm install` y luego `npm start`.
 2.  En el Dashboard (`localhost:8000`), introduce tus usuarios y configura tus bots.
-3.  Haz clic en **CONECTAR**. Verifica que los puntos de estado se pongan verdes.
-4.  En la columna derecha, haz clic en la fuente que prefieras para copiar el link.
-5.  En OBS, añade una **Fuente de Navegador** y pega el link.
+3.  En la sección **Estilo de Burbuja**, selecciona el diseño visual que prefieras.
+4.  Haz clic en **CONECTAR**. Verifica que los puntos de estado se pongan verdes.
+5.  En la columna derecha, haz clic en la fuente que prefieras para copiar el link.
+6.  En OBS, añade una **Fuente de Navegador** y pega el link.
 
 Desarrollado con pasión técnica por **Tony Reel**.
 "# multichat-pro-" 

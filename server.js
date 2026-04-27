@@ -227,6 +227,7 @@ app.post('/update_integrations', (req, res) => {
 
 io.on('connection', (socket) => {
     socket.on('update_style', (data) => io.emit('apply_style', data));
+    socket.on('test_message', (data) => io.emit('new_message', data));
 });
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));

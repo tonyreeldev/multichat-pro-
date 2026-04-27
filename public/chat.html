@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Multichat View</title>
     <script src="/socket.io/socket.io.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Roboto:wght@400;700&family=Poppins:wght@400;700&family=Bebas+Neue&family=Fredoka:wght@600&display=swap" rel="stylesheet">
     <style>
         :root { --font-size: 18px; --bg-opacity: 0.4; --text-color: #ffffff; --font-family: 'Segoe UI', sans-serif; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -27,12 +28,86 @@
         @keyframes scroll-up { from { transform: translateY(0); } to { transform: translateY(-100%); } }
 
         .message-item { animation: fadeIn 0.3s ease-out forwards; padding: 10px 15px; border-radius: 12px; background: rgba(15, 23, 42, var(--bg-opacity)); border-left: 4px solid #3b82f6; max-width: 100%; word-wrap: break-word; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .author { font-weight: 700; margin-bottom: 4px; font-size: 0.9em; display: flex; justify-content: space-between; gap: 10px; }
-        .platform-tag { font-size: 0.6em; opacity: 0.5; text-transform: uppercase; }
+        .author { font-weight: 700; margin-bottom: 4px; font-size: 0.9em; display: flex; align-items: center; gap: 6px; }
+        .platform-tag { 
+            font-size: 0.65em; 
+            padding: 2px 8px; 
+            border-radius: 4px; 
+            background: rgba(255,255,255,0.1); 
+            text-transform: uppercase; 
+            font-weight: 800; 
+            margin-right: 4px;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255,255,255,0.05);
+            display: inline-block;
+            line-height: 1.2;
+        }
         .content { line-height: 1.4; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
         .emote { height: 1.2em; vertical-align: middle; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .avatar-img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
+        
+        /* Bubble Style Variations */
+        .bubble-default { /* Hereda estilos base de .message-item */ }
+        
+        .bubble-messaging {
+            border-radius: 18px 18px 18px 4px;
+            padding: 10px 15px;
+        }
+        
+        .bubble-minimal {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            padding: 6px 10px;
+        }
+        
+        .bubble-glass {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+        }
+        
+        .bubble-avatar {
+            padding-left: 50px;
+            position: relative;
+        }
+        .bubble-avatar .avatar-img {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* Nuevos Estilos */
+        .bubble-neon {
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid var(--border-color, #3b82f6);
+            box-shadow: 0 0 15px var(--border-color, #3b82f6), inset 0 0 10px var(--border-color, #3b82f6);
+            border-radius: 10px;
+        }
+        
+        .bubble-retro {
+            border: 4px double #ffffff;
+            border-radius: 0;
+            background: #000000;
+            font-family: 'Courier New', monospace;
+            image-rendering: pixelated;
+        }
+        
+        .bubble-gradient {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95));
+            border-left: 6px solid var(--border-color, #3b82f6);
+            border-radius: 15px;
+        }
+        
+        .bubble-border {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 8px solid var(--border-color, #3b82f6);
+            border-radius: 0 10px 10px 0;
+            padding: 12px 20px;
+        }
     </style>
 </head>
 <body>
@@ -47,17 +122,24 @@
         let currentStyle = { bubbleStyle: 'default' };
 
         socket.on('apply_style', (style) => {
+            console.log('Style received:', style);
             currentStyle = style;
             document.documentElement.style.setProperty('--font-size', style.fontSize);
             document.documentElement.style.setProperty('--bg-opacity', style.bgOpacity);
             document.documentElement.style.setProperty('--text-color', style.textColor);
             document.documentElement.style.setProperty('--font-family', style.fontFamily);
+            const bubbleClass = `bubble-${style.bubbleStyle || 'default'}`;
+            document.querySelectorAll('.message-item').forEach(msg => {
+                msg.className = `message-item ${bubbleClass}`;
+            });
+            console.log('Applied bubble class:', bubbleClass);
         });
 
         socket.on('new_message', (data) => {
             const msgDiv = document.createElement('div');
-            msgDiv.className = `message-item bubble-${currentStyle.bubbleStyle}`;
+            msgDiv.className = `message-item bubble-${currentStyle.bubbleStyle || 'default'}`;
             msgDiv.style.borderColor = data.color || '#3b82f6';
+            msgDiv.style.setProperty('--border-color', data.color || '#3b82f6');
 
             let contentHTML = '';
             if (data.parts && data.parts.length > 0) {
@@ -72,9 +154,9 @@
             msgDiv.innerHTML = `
                 ${currentStyle.bubbleStyle === 'avatar' ? `<img src="${data.avatar || 'https://kick.com/img/default-profile-pictures/default2.jpeg'}" class="avatar-img">` : ''}
                 <div style="flex:1">
-                    <div class="author" style="color: ${data.color || '#ffffff'}">
-                        ${data.author}
-                        <span class="platform-tag">${data.platform}</span>
+                    <div class="author">
+                        <span class="platform-tag" style="background-color: ${data.color || '#3b82f6'}; color: #fff; border: none;">${data.platform ? data.platform.toUpperCase() : ''}</span>
+                        <span style="color: ${data.color || '#ffffff'}">${data.author}</span>
                     </div>
                     <div class="content">${contentHTML}</div>
                 </div>

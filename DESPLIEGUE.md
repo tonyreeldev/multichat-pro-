@@ -52,6 +52,20 @@ Una vez que Render termine (verás un mensaje de "Live"), te dará una URL (ej: 
 
 ---
 
+## 🔄 Actualizar Cambios en Render
+
+Cuando hagas cambios en el código (como nuevos estilos o correcciones), debes subirlos a GitHub para que Render los despliegue automáticamente:
+
+```bash
+git add .
+git commit -m "Actualización: nuevos estilos de burbujas y colores de plataforma"
+git push origin main
+```
+
+Render detectará los cambios y reiniciará el servidor automáticamente (tarda ~2-3 minutos).
+
+---
+
 ## ⚠️ Notas de Seguridad
 
 *   **channels.json**: Por defecto, el archivo `.gitignore` evita que se suba tu configuración personal a GitHub. Esto es bueno para que nadie vea tus usuarios. Al estar en la nube, la configuración se guardará en la memoria del servidor de Render.
