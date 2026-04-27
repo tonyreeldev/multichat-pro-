@@ -1,8 +1,10 @@
-# Multichat Pro v2.0 (Versión Final de Élite)
+# Multichat Pro v2.0 (Versión Final de Élite Hibrido)
 
 **Multichat Pro** es la solución definitiva para streamers profesionales. Unifica los chats de **Twitch, YouTube, TikTok y Kick** en un solo overlay para OBS, procesando no solo mensajes, sino también eventos de apoyo en tiempo real (Regalos, Seguidores, Likes y Raids). 
 
 Reescrito completamente en **Node.js**, ofrece un rendimiento ultra-ligero y una resistencia superior contra bloqueos de seguridad.
+
+Trabaja en modo local para mejor respuesta o en modo Web accediendo al link
 
 link
 https://multichat-pro-tr.onrender.com/
