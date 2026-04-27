@@ -107,6 +107,10 @@
                 <div class="space-y-6">
                     <h2 class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2"><span class="w-1.5 h-3 bg-emerald-500 rounded-full"></span> Comportamiento</h2>
                     <div class="space-y-3">
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-[10px] font-bold text-slate-400"><span>AUTO-OCULTAR</span><span id="auto-hide-val">Nunca</span></div>
+                            <input type="range" id="auto-hide" min="0" max="60" value="0" step="5" class="w-full" oninput="document.getElementById('auto-hide-val').innerText = this.value == '0' ? 'Nunca' : this.value + 's'; updateStyle()">
+                        </div>
                         <label class="flex items-center gap-3 p-2 bg-slate-900/30 rounded-lg cursor-pointer border border-slate-800/50 hover:bg-slate-800 transition"><input type="checkbox" id="rainbow-mode" class="w-4 h-4 rounded text-pink-500 focus:ring-0 bg-slate-900" onchange="updateStyle()"><span class="text-xs text-slate-300">Modo Rainbow</span></label>
                         <label class="flex items-center gap-3 p-2 bg-slate-900/30 rounded-lg cursor-pointer border border-slate-800/50 hover:bg-slate-800 transition"><input type="checkbox" id="pause-on-hover" class="w-4 h-4 rounded text-blue-500 focus:ring-0 bg-slate-900" onchange="updateStyle()" checked><span class="text-xs text-slate-300">Pausar con mouse</span></label>
                     </div>
@@ -146,6 +150,7 @@
                 <div class="relative p-2 bg-slate-900/80 rounded border border-slate-800 cursor-pointer hover:border-blue-500/50 transition group" onclick="copyLink('/chat?layout=horizontal', this)"><div class="copy-feedback">¡Copiado!</div><div class="text-[8px] font-bold text-blue-400 mb-1">HORIZONTAL</div><div class="text-[9px] text-slate-500 truncate">?layout=horizontal</div></div>
                 <div class="relative p-2 bg-slate-900/80 rounded border border-slate-800 cursor-pointer hover:border-blue-500/50 transition group" onclick="copyLink('/chat?layout=ticker', this)"><div class="copy-feedback">¡Copiado!</div><div class="text-[8px] font-bold text-blue-400 mb-1">TICKER</div><div class="text-[9px] text-slate-500 truncate">?layout=ticker</div></div>
                 <div class="relative p-2 bg-slate-900/80 rounded border border-slate-800 cursor-pointer hover:border-blue-500/50 transition group" onclick="copyLink('/chat?layout=scroll', this)"><div class="copy-feedback">¡Copiado!</div><div class="text-[8px] font-bold text-blue-400 mb-1">SCROLL</div><div class="text-[9px] text-slate-500 truncate">?layout=scroll</div></div>
+                <div class="relative p-2 bg-slate-800 rounded border border-slate-700 cursor-pointer hover:border-emerald-500/50 transition group" onclick="copyLink('/panel', this)"><div class="copy-feedback">¡Copiado!</div><div class="text-[8px] font-bold text-emerald-400 mb-1">DOCK / PANEL OBS</div><div class="text-[9px] text-slate-400 truncate">/panel (Fondo Oscuro)</div></div>
             </div>
 
             <div class="glass p-5 rounded-xl border-t-2 border-t-emerald-500 space-y-3">
@@ -219,7 +224,16 @@
         }
 
         function updateStyle() {
-            const data = { fontSize: document.getElementById('font-size').value + 'px', bgOpacity: document.getElementById('bg-opacity').value / 100, fontFamily: document.getElementById('font-family').value, textColor: document.getElementById('text-color').value, rainbowMode: document.getElementById('rainbow-mode').checked, pauseOnHover: document.getElementById('pause-on-hover').checked, bubbleStyle: currentBubble };
+            const data = { 
+                fontSize: document.getElementById('font-size').value + 'px', 
+                bgOpacity: document.getElementById('bg-opacity').value / 100, 
+                fontFamily: document.getElementById('font-family').value, 
+                textColor: document.getElementById('text-color').value, 
+                rainbowMode: document.getElementById('rainbow-mode').checked, 
+                pauseOnHover: document.getElementById('pause-on-hover').checked, 
+                bubbleStyle: currentBubble,
+                autoHide: parseInt(document.getElementById('auto-hide').value)
+            };
             socket.emit('update_style', data);
             localStorage.setItem('chatStyle', JSON.stringify(data));
         }
@@ -231,9 +245,11 @@
             const colors = ['#9146FF', '#FF0000', '#EE1D52', '#53FC18', '#3b82f6'];
             
             const randomIdx = Math.floor(Math.random() * platforms.length);
+            const author = authors[Math.floor(Math.random() * authors.length)];
             const data = {
                 platform: platforms[randomIdx],
-                author: authors[Math.floor(Math.random() * authors.length)],
+                author: author,
+                avatar: `https://ui-avatars.com/api/?name=${author}&background=random&color=fff`,
                 message: messages[Math.floor(Math.random() * messages.length)],
                 color: colors[randomIdx],
                 type: 'chat',
@@ -253,6 +269,10 @@
             const saved = JSON.parse(localStorage.getItem('chatStyle') || '{}');
             if (saved.fontSize) document.getElementById('font-size').value = parseInt(saved.fontSize);
             if (saved.bgOpacity !== undefined) document.getElementById('bg-opacity').value = saved.bgOpacity * 100;
+            if (saved.autoHide !== undefined) {
+                document.getElementById('auto-hide').value = saved.autoHide;
+                document.getElementById('auto-hide-val').innerText = saved.autoHide == '0' ? 'Nunca' : saved.autoHide + 's';
+            }
             if (saved.bubbleStyle) setBubble(saved.bubbleStyle);
             try {
                 const res = await fetch('/config');
@@ -273,7 +293,14 @@
             setTimeout(updateStyle, 500);
         };
 
-        function copyLink(p, el) { navigator.clipboard.writeText(window.location.origin + p); const fb = el.querySelector('.copy-feedback'); fb.classList.add('show'); setTimeout(() => fb.classList.remove('show'), 2000); }
+        function copyLink(p, el) { 
+            const url = window.location.origin + p;
+            navigator.clipboard.writeText(url); 
+            const fb = el.querySelector('.copy-feedback'); 
+            fb.classList.add('show'); 
+            setTimeout(() => fb.classList.remove('show'), 2000); 
+            window.open(url, '_blank');
+        }
     </script>
 </body>
 </html>

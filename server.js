@@ -183,7 +183,15 @@ const connectKick = async (username, manualId = null) => {
             const response = JSON.parse(data);
             if (response.event === 'App\\Events\\ChatMessageEvent') {
                 const msg = JSON.parse(response.data);
-                emitMessage({ platform: 'kick', type: 'chat', author: msg.sender.username, message: msg.content, parts: parseKickEmotes(msg.content), color: msg.sender.identity.color || '#53FC18' });
+                emitMessage({ 
+                    platform: 'kick', 
+                    type: 'chat', 
+                    author: msg.sender.username, 
+                    message: msg.content, 
+                    parts: parseKickEmotes(msg.content), 
+                    color: msg.sender.identity.color || '#53FC18',
+                    avatar: msg.sender.profile_pic 
+                });
             }
             if (response.event === 'pusher:ping') kickWS.send(JSON.stringify({ event: 'pusher:pong', data: {} }));
         });
@@ -232,6 +240,7 @@ io.on('connection', (socket) => {
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 app.get('/chat', (req, res) => res.sendFile(path.join(__dirname, 'public', 'chat.html')));
+app.get('/panel', (req, res) => res.sendFile(path.join(__dirname, 'public', 'panel.html')));
 
 server.listen(PORT, () => {
     logSystem('success', `Dashboard en http://localhost:${PORT}`);

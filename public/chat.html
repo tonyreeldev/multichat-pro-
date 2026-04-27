@@ -15,19 +15,72 @@
         #chat-container { display: flex; flex-direction: column; justify-content: flex-end; height: 100%; padding: 20px; gap: 10px; }
         
         /* Layout: Horizontal */
-        body.layout-horizontal #chat-container { flex-direction: row; justify-content: flex-start; align-items: flex-end; overflow-x: auto; }
-        body.layout-horizontal .message-item { min-width: 250px; max-width: 350px; flex-shrink: 0; }
+        body.layout-horizontal #chat-container { 
+            flex-direction: row; 
+            justify-content: flex-start; 
+            align-items: center; 
+            overflow-x: hidden; 
+            gap: 15px;
+            padding: 10px 20px;
+        }
+        body.layout-horizontal .message-item { 
+            min-width: 250px; 
+            max-width: 450px; 
+            flex-shrink: 0; 
+            white-space: normal; /* Permite que el texto salte de línea dentro de la burbuja */
+            display: flex;
+            flex-direction: column;
+        }
 
         /* Layout: Ticker (Noticiero) */
-        body.layout-ticker #chat-container { flex-direction: row; align-items: center; justify-content: flex-start; white-space: nowrap; height: 60px; padding: 0; gap: 40px; animation: ticker-move 30s linear infinite; }
-        body.layout-ticker .message-item { background: transparent; border: 0; padding: 0; display: inline-flex; gap: 10px; align-items: center; box-shadow: none; }
-        @keyframes ticker-move { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+        body.layout-ticker {
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+        body.layout-ticker #chat-container { 
+            display: inline-flex; /* Crucial: El contenedor se expande según el contenido */
+            flex-direction: row; 
+            align-items: center; 
+            justify-content: flex-start; 
+            white-space: nowrap; 
+            height: 85px; 
+            padding: 0 50px; 
+            gap: 100px; 
+            overflow: visible; /* Dejamos que el contenido salga para medirlo bien */
+            will-change: transform;
+        }
+        body.layout-ticker .message-item { 
+            display: flex; 
+            gap: 12px; 
+            align-items: center; 
+            flex-shrink: 0;
+            white-space: nowrap; /* En Ticker preferimos una sola línea larga por mensaje */
+            max-width: none; /* Sin límite para que el Ticker sea una cinta continua */
+        }
+        /* En modo Ticker, evitamos forzar el fondo base si hay un estilo específico */
+        body.layout-ticker .message-item.bubble-default {
+            background: rgba(15, 23, 42, var(--bg-opacity)); 
+            border-radius: 8px;
+            padding: 8px 15px;
+        }
 
         /* Layout: Scroll (Infinito) */
         body.layout-scroll #chat-container { justify-content: flex-start; animation: scroll-up 60s linear infinite; }
         @keyframes scroll-up { from { transform: translateY(0); } to { transform: translateY(-100%); } }
 
-        .message-item { animation: fadeIn 0.3s ease-out forwards; padding: 10px 15px; border-radius: 12px; background: rgba(15, 23, 42, var(--bg-opacity)); border-left: 4px solid #3b82f6; max-width: 100%; word-wrap: break-word; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .message-item { 
+            will-change: transform, opacity;
+            backface-visibility: hidden;
+            animation: fadeIn 0.3s ease-out forwards; 
+            padding: 10px 15px; 
+            border-radius: 12px; 
+            background: rgba(15, 23, 42, var(--bg-opacity)); 
+            border-left: 4px solid #3b82f6; 
+            max-width: 100%; 
+            word-wrap: break-word; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+        }
         .author { font-weight: 700; margin-bottom: 4px; font-size: 0.9em; display: flex; align-items: center; gap: 6px; }
         .platform-tag { 
             font-size: 0.65em; 
@@ -45,6 +98,8 @@
         .content { line-height: 1.4; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
         .emote { height: 1.2em; vertical-align: middle; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-10px); } }
+        .message-item.fade-out { animation: fadeOut 0.5s ease-in forwards; }
         .avatar-img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
         
         /* Bubble Style Variations */
@@ -89,24 +144,30 @@
         }
         
         .bubble-retro {
-            border: 4px double #ffffff;
+            border: 4px solid #fff;
+            box-shadow: 4px 4px 0px #000, 8px 8px 0px var(--border-color, #3b82f6);
             border-radius: 0;
-            background: #000000;
+            background: #000;
             font-family: 'Courier New', monospace;
-            image-rendering: pixelated;
+            padding: 12px;
         }
         
         .bubble-gradient {
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95));
-            border-left: 6px solid var(--border-color, #3b82f6);
-            border-radius: 15px;
+            background: linear-gradient(135deg, var(--border-color, #3b82f6) 0%, rgba(15, 23, 42, 0.7) 100%);
+            border: none;
+            border-left: 5px solid #fff;
+            border-radius: 12px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
         
         .bubble-border {
-            background: rgba(255, 255, 255, 0.05);
-            border-left: 8px solid var(--border-color, #3b82f6);
-            border-radius: 0 10px 10px 0;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-left: 10px solid var(--border-color, #3b82f6);
+            border-radius: 4px 15px 15px 4px;
             padding: 12px 20px;
+            box-shadow: -5px 0 20px -10px var(--border-color, #3b82f6);
         }
     </style>
 </head>
@@ -119,7 +180,7 @@
         const layout = urlParams.get('layout') || 'vertical';
         document.body.classList.add(`layout-${layout}`);
 
-        let currentStyle = { bubbleStyle: 'default' };
+        let currentStyle = { bubbleStyle: 'default', autoHide: 0 };
 
         socket.on('apply_style', (style) => {
             console.log('Style received:', style);
@@ -141,6 +202,14 @@
             msgDiv.style.borderColor = data.color || '#3b82f6';
             msgDiv.style.setProperty('--border-color', data.color || '#3b82f6');
 
+            const platformColors = {
+                twitch: { bg: '#9146FF', text: '#fff' },
+                youtube: { bg: '#FF0000', text: '#fff' },
+                tiktok: { bg: '#fe2c55', text: '#fff' },
+                kick: { bg: '#53FC18', text: '#000' }
+            };
+            const pConf = platformColors[data.platform?.toLowerCase()] || { bg: '#3b82f6', text: '#fff' };
+
             let contentHTML = '';
             if (data.parts && data.parts.length > 0) {
                 data.parts.forEach(p => {
@@ -151,11 +220,13 @@
                 contentHTML = `<span>${escapeHTML(data.message)}</span>`;
             }
 
+            const avatarUrl = data.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.author)}&background=random&color=fff`;
+
             msgDiv.innerHTML = `
-                ${currentStyle.bubbleStyle === 'avatar' ? `<img src="${data.avatar || 'https://kick.com/img/default-profile-pictures/default2.jpeg'}" class="avatar-img">` : ''}
+                ${currentStyle.bubbleStyle === 'avatar' ? `<img src="${avatarUrl}" class="avatar-img">` : ''}
                 <div style="flex:1">
                     <div class="author">
-                        <span class="platform-tag" style="background-color: ${data.color || '#3b82f6'}; color: #fff; border: none;">${data.platform ? data.platform.toUpperCase() : ''}</span>
+                        <span class="platform-tag" style="background-color: ${pConf.bg}; color: ${pConf.text}; border: none;">${data.platform ? data.platform.toUpperCase() : ''}</span>
                         <span style="color: ${data.color || '#ffffff'}">${data.author}</span>
                     </div>
                     <div class="content">${contentHTML}</div>
@@ -163,9 +234,68 @@
             `;
 
             container.appendChild(msgDiv);
+            
+            // Lógica de Auto-Ocultado
+            if (currentStyle.autoHide > 0 && layout !== 'ticker' && layout !== 'scroll') {
+                setTimeout(() => {
+                    msgDiv.classList.add('fade-out');
+                    setTimeout(() => {
+                        if (msgDiv.parentNode === container) container.removeChild(msgDiv);
+                    }, 500);
+                }, currentStyle.autoHide * 1000);
+            }
+
             if (container.children.length > 50) container.removeChild(container.firstChild);
-            if (layout === 'vertical' || layout === 'horizontal') window.scrollTo(0, document.body.scrollHeight);
+            
+            if (layout === 'vertical') window.scrollTo(0, document.body.scrollHeight);
+            if (layout === 'horizontal') {
+                setTimeout(() => {
+                    container.scrollTo({
+                        left: container.scrollWidth,
+                        behavior: 'smooth'
+                    });
+                }, 50);
+            }
         });
+
+        // Motor de Ticker Fluido - Versión Estabilidad Total
+        let tickerPos = window.innerWidth;
+        let isPaused = false;
+
+        function animateTicker() {
+            if (layout === 'ticker' && !isPaused) {
+                const contentWidth = container.offsetWidth;
+                
+                if (container.children.length > 0) {
+                    tickerPos -= 1.8; // Velocidad ajustada
+                    
+                    // Si todo el bloque de mensajes ha pasado el borde izquierdo
+                    if (tickerPos < -contentWidth) {
+                        tickerPos = window.innerWidth; // Reinicia desde la derecha
+                    }
+                } else {
+                    tickerPos = window.innerWidth;
+                }
+                container.style.transform = `translateX(${tickerPos}px)`;
+            }
+            requestAnimationFrame(animateTicker);
+        }
+
+        // Forzar actualización de posición cuando llegan mensajes nuevos
+        socket.on('new_message', () => {
+            if (layout === 'ticker' && container.children.length === 1) {
+                // Si es el primer mensaje, nos aseguramos de que empiece a moverse
+                if (tickerPos < 0) tickerPos = window.innerWidth;
+            }
+        });
+
+        // Pausar con mouse si está activado
+        container.addEventListener('mouseenter', () => { if (currentStyle.pauseOnHover) isPaused = true; });
+        container.addEventListener('mouseleave', () => { isPaused = false; });
+
+        if (layout === 'ticker') {
+            animateTicker();
+        }
 
         function escapeHTML(str) {
             const p = document.createElement('p');

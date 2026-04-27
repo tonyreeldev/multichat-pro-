@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multichat - Panel OBS</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Montserrat:wght@700&family=Roboto:wght@400;700&family=Poppins:wght@400;700&family=Bebas+Neue&family=Fredoka:wght@600&display=swap" rel="stylesheet">
+    <style>
+        :root { --font-size: 16px; --bg-opacity: 0.8; --text-color: #ffffff; --font-family: 'Inter', sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            background-color: #0f172a; 
+            font-family: var(--font-family); 
+            color: var(--text-color); 
+            font-size: var(--font-size); 
+            height: 100vh; 
+            width: 100vw; 
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #334155 #0f172a;
+        }
+        
+        #chat-container { 
+            display: flex; 
+            flex-direction: column; 
+            padding: 15px; 
+            gap: 12px; 
+            min-height: 100%;
+        }
+        
+        .message-item { 
+            animation: fadeIn 0.3s ease-out forwards; 
+            padding: 12px 15px; 
+            border-radius: 12px; 
+            background: rgba(30, 41, 59, var(--bg-opacity)); 
+            border-left: 4px solid #3b82f6; 
+            max-width: 100%; 
+            word-wrap: break-word; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .author { font-weight: 700; margin-bottom: 4px; font-size: 0.85em; display: flex; align-items: center; gap: 6px; }
+        .platform-tag { 
+            font-size: 0.6em; 
+            padding: 2px 8px; 
+            border-radius: 4px; 
+            text-transform: uppercase; 
+            font-weight: 800; 
+            color: #fff;
+            display: inline-block;
+            line-height: 1.2;
+        }
+        
+        .content { line-height: 1.4; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font-size: 0.95em; }
+        .emote { height: 1.2em; vertical-align: middle; }
+        .avatar-img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Estilos de Burbuja Mejorados */
+        .bubble-neon { 
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid var(--border-color, #3b82f6);
+            box-shadow: 0 0 10px var(--border-color, #3b82f6);
+        }
+        
+        .bubble-retro {
+            border: 4px solid #fff;
+            box-shadow: 4px 4px 0px #000, 6px 6px 0px var(--border-color, #3b82f6);
+            border-radius: 0;
+            background: #000;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .bubble-gradient {
+            background: linear-gradient(135deg, var(--border-color, #3b82f6) 0%, rgba(15, 23, 42, 0.7) 100%);
+            border: none;
+            border-left: 5px solid #fff;
+            border-radius: 12px;
+        }
+        
+        .bubble-border {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-left: 10px solid var(--border-color, #3b82f6);
+            border-radius: 4px 15px 15px 4px;
+        }
+
+        .bubble-avatar { padding-left: 50px; position: relative; }
+        .bubble-avatar .avatar-img { position: absolute; left: 10px; top: 12px; }
+        .bubble-minimal { background: transparent; border: none; box-shadow: none; padding-left: 0; }
+        .bubble-glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    </style>
+</head>
+<body>
+    <div id="chat-container"></div>
+    <script>
+        const socket = io();
+        const container = document.getElementById('chat-container');
+        let currentStyle = { bubbleStyle: 'default', autoHide: 0 };
+
+        socket.on('apply_style', (style) => {
+            currentStyle = style;
+            document.documentElement.style.setProperty('--font-size', style.fontSize);
+            document.documentElement.style.setProperty('--text-color', style.textColor);
+            document.documentElement.style.setProperty('--font-family', style.fontFamily);
+            document.documentElement.style.setProperty('--bg-opacity', style.bgOpacity);
+            
+            const bubbleClass = `bubble-${style.bubbleStyle || 'default'}`;
+            document.querySelectorAll('.message-item').forEach(msg => {
+                msg.className = `message-item ${bubbleClass}`;
+            });
+        });
+
+        socket.on('new_message', (data) => {
+            const msgDiv = document.createElement('div');
+            const bubbleClass = `bubble-${currentStyle.bubbleStyle || 'default'}`;
+            msgDiv.className = `message-item ${bubbleClass}`;
+            msgDiv.style.borderColor = data.color || '#3b82f6';
+            msgDiv.style.setProperty('--border-color', data.color || '#3b82f6');
+
+            const platformColors = {
+                twitch: { bg: '#9146FF', text: '#fff' },
+                youtube: { bg: '#FF0000', text: '#fff' },
+                tiktok: { bg: '#fe2c55', text: '#fff' },
+                kick: { bg: '#53FC18', text: '#000' }
+            };
+            const pConf = platformColors[data.platform?.toLowerCase()] || { bg: '#3b82f6', text: '#fff' };
+
+            let contentHTML = '';
+            if (data.parts) {
+                data.parts.forEach(p => {
+                    if (p.type === 'text') contentHTML += `<span>${escapeHTML(p.content)}</span>`;
+                    else if (p.type === 'emote') contentHTML += `<img src="${p.url}" class="emote">`;
+                });
+            } else {
+                contentHTML = `<span>${escapeHTML(data.message)}</span>`;
+            }
+
+            const avatarUrl = data.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.author)}&background=random&color=fff`;
+
+            msgDiv.innerHTML = `
+                ${currentStyle.bubbleStyle === 'avatar' ? `<img src="${avatarUrl}" class="avatar-img">` : ''}
+                <div style="flex:1">
+                    <div class="author">
+                        <span class="platform-tag" style="background-color: ${pConf.bg}; color: ${pConf.text}">${data.platform ? data.platform.toUpperCase() : ''}</span>
+                        <span style="color: ${data.color || '#ffffff'}">${data.author}</span>
+                    </div>
+                    <div class="content">${contentHTML}</div>
+                </div>
+            `;
+
+            container.appendChild(msgDiv);
+            if (container.children.length > 100) container.removeChild(container.firstChild);
+            window.scrollTo(0, document.body.scrollHeight);
+        });
+
+        function escapeHTML(str) {
+            const p = document.createElement('p');
+            p.textContent = str;
+            return p.innerHTML;
+        }
+    </script>
+</body>
+</html>
